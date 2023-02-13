@@ -1,6 +1,9 @@
+import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 
 export const OrganizationName = () => {
+    const dispatch = useDispatch();
+
     const { isLoading, error, data, isFetching } = useQuery({
         queryKey: ['organizationName'],
         queryFn: async () => {
@@ -12,6 +15,12 @@ export const OrganizationName = () => {
                 .then((res) => res.json())
                 .then((dt) => dt);
         },
+    });
+
+    // TODO: testing
+    dispatch({
+        type: 'RECEIVED_DATA',
+        payload: 'TEST'
     });
 
     return (
