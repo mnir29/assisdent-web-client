@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import useEntityStore from './store/store';
 
 export const OrganizationName = () => {
     const { isLoading, error, data, isFetching } = useQuery({
@@ -14,8 +15,11 @@ export const OrganizationName = () => {
         },
     });
 
+    const entities = useEntityStore((state) => state.entities);
+
     return (
         <div className="card">
+            <h3>{entities}</h3>
             <p>Hello, {import.meta.env.VITE_ASSISCARE_USER}!</p>
             <p>{isLoading ? 'Loading...' : data?.OrganizationName}</p>
             <p>
