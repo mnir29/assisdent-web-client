@@ -2,7 +2,12 @@ function ModalFooter() {
     // napit riippuen näkymästä
     // sivutus
 
-    return <></>;
+    return (
+        <>
+            <div></div>
+            <div></div>
+        </>
+    );
 }
 
 export default ModalFooter;

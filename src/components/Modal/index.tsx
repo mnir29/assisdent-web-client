@@ -4,6 +4,7 @@ import ModalFooter from './ModalFooter';
 type ModalProps = {
     title: string;
     children: React.ReactNode;
+    close: () => void;
     footer?: React.ReactNode;
 };
 
@@ -15,7 +16,10 @@ function Modal(props: ModalProps) {
                     {props.title}
                 </h2>
 
-                <button className="bg-red-900 text-white px-4 py-2 rounded">
+                <button
+                    onClick={props.close}
+                    className="bg-red-900 text-white px-4 py-2 rounded"
+                >
                     Sulje
                 </button>
             </div>
