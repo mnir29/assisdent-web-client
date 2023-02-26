@@ -1,4 +1,5 @@
 import React from "react";
+import { RegisterViewContent } from "./RegisterViewContent";
 
 export type DataProps = {
   view: Element | undefined | null
@@ -46,9 +47,9 @@ const parseViewXml = (view: Element | undefined | null) => {
 
     if (element.tagName === "Button") {
       const buttonText = element.getAttribute("Text")
-      content.push(<button className={"bg-ad-primary p-2 rounded hover:bg-ad-primary-hover text-white transition"} onClick={() => console.log(`Clicked button ${buttonText}`)}>{buttonText}</button>)
+      content.push(<th><button className={"bg-ad-primary p-2 rounded hover:bg-ad-primary-hover text-white transition"} onClick={() => console.log(`Clicked button ${buttonText}`)}>{buttonText}</button></th>)
     } else if (element.tagName === "Element") {
-      content.push(<p>{element.getAttribute("Value")}</p>)
+      content.push(<th><p>{element.getAttribute("Value")}</p></th>)
     }
 
     for (const child of element.children) {
@@ -64,18 +65,24 @@ const parseViewXml = (view: Element | undefined | null) => {
 }
 
 export const ShowViewContent = ({view}: DataProps) => {
-
   const viewContent = parseViewXml(view)
   console.log(view)
 
   return (
-    <div className="view-content">
-      {view ? <h2 className={"text-2xl mb-8"}>{view.getAttribute("Header")}</h2> : ""}
-      {viewContent?.map((component, idx) => (
-        <React.Fragment key={idx}>
-          { component }
-        </React.Fragment>
-      ))}
-    </div>
-  )
+      <div className="view-content">
+          {view ? (
+              <h2 className={'text-2xl mb-8'}>{view.getAttribute('Header')}</h2>
+          ) : (
+              ''
+          )}
+          <table>
+              <tr>
+                  {viewContent?.map((component, idx) => (
+                      <React.Fragment key={idx}>{component}</React.Fragment>
+                  ))}
+              </tr>
+              <RegisterViewContent/>
+          </table>
+      </div>
+  );
 }
