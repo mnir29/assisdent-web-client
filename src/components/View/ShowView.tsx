@@ -14,6 +14,16 @@ export const ShowView = () => {
       <section className="flex p-4">
           <Routes>
               <Route
+                  path="/dash"
+                  element={
+                    <header className={`w-full bg-white p-4`}>
+                        <h1
+                            className={`text-3xl text-ad-hero-title font-medium`}
+                        >Tervetuloa</h1>
+                    </header>
+                  }
+              />
+              <Route
                   path="/view/:viewid"
                   element={
                       <>

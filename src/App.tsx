@@ -3,20 +3,29 @@ import {Sidebar} from './components/Sidebar';
 import {ShowView} from "./components/View/ShowView";
 import {MainView} from "./components/MainView";
 import {ApplicationBar} from "./components/ApplicationBar";
+import { Routes, Route } from 'react-router-dom';
+import LoginForm from './components/Auth/LoginForm';
 
 function App() {
   return (
-    <div className="App w-full flex">
-      <Sidebar/>
-      <MainView>
-        <ApplicationBar />
-        <header className={`w-full bg-white p-4`}>
-          <h1 className={`text-3xl text-ad-hero-title font-medium`}>Toimipisteet</h1>
-        </header>
-        <ShowView/>
-      </MainView>
-    </div>
-  )
+      <div className="App w-full flex">
+          <Routes>
+              <Route path="/" element={<LoginForm/>} />
+              <Route
+                  path="*"
+                  element={
+                      <>
+                          <Sidebar />
+                          <MainView>
+                              <ApplicationBar />
+                              <ShowView />
+                          </MainView>
+                      </>
+                  }
+              />
+          </Routes>
+      </div>
+  );
 }
 
 export default App;
