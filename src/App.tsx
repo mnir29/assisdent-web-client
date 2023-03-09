@@ -1,28 +1,22 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Sidebar } from './components/Sidebar';
-import Modal from './components/Modal';
-import { useState } from 'react';
+import { MainView } from './components/MainView';
+import { ApplicationBar } from './components/ApplicationBar';
+import { Outlet, useNavigation } from 'react-router-dom';
 
 function App() {
-    const queryClient = new QueryClient();
-    const [modal, setModal] = useState(true);
+    const navigation = useNavigation();
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <div className="w-screen h-screen">
-                <Sidebar />
-
-                <Modal
-                    title="Test"
-                    visible={modal}
-                    close={() => {
-                        setModal(false);
-                    }}
-                >
-                    <h1>Valitse yritys</h1>
-                </Modal>
-            </div>
-        </QueryClientProvider>
+        <div className="App w-full flex">
+            <Sidebar />
+            <MainView>
+                <ApplicationBar />
+                {navigation.state === 'loading' && (
+                    <p className={`px-8 pt-4 text-2xl`}>Loading page...</p>
+                )}
+                <Outlet />
+            </MainView>
+        </div>
     );
 }
 
