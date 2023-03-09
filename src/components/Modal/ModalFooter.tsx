@@ -1,6 +1,6 @@
 function ModalFooter() {
-    // napit riippuen näkymästä
-    // sivutus
+    // TODO: napit riippuen näkymästä
+    // TODO: sivutus
 
     return (
         <>
