@@ -1,33 +1,35 @@
 import {RegisterView} from "./RegisterView";
 import {useParams} from 'react-router-dom';
 import {ViewHeader} from "./ViewHeader";
-import {useIsFetching, useQuery} from "@tanstack/react-query";
+import useSchemaStore from '../../store/store';
+import { useEffect, useState } from 'react';
 import {getViewFromSchemaByName} from "../../utils/Parser";
-import {schemaQuery} from "../../temp/SchemaUtils";
-
 
 export const ShowView = () => {
-  const { data: schema } = useQuery(schemaQuery())
-  const { viewId } = useParams()
-  const { data: entity } = useQuery({
-    queryKey: ["schema", "metaview", viewId],
-    queryFn: () => getViewFromSchemaByName(schema!, viewId!),
-    enabled: !!schema
-  })
-  const isLoadingSchema = useIsFetching(["schema", "metaview", viewId]) > 0
+  const [registerView, setRegisterView] = useState(null);
+  const schemaInStore = useSchemaStore((state: any) => state.schema);
+  const { viewId } = useParams();
+
+  useEffect(() => {
+      setRegisterView(getViewFromSchemaByName(schemaInStore, viewId!));
+  }, [schemaInStore]);
 
   return (
-    <>
-      {isLoadingSchema && <p>Loading view</p>}
-      {entity && viewId
-        && <ViewHeader heading={entity.documentElement.getAttribute("Header")!} />}
+      <>
+          {registerView && viewId && (
+              <ViewHeader
+                  heading={registerView.documentElement.getAttribute('Header')!}
+              />
+          )}
 
-      <section className={`flex flex-col pb-4`}>
-        {entity && viewId &&
-          <RegisterView
-            key={entity.documentElement.getAttribute("Name")}
-            view={entity.documentElement!}/>}
-      </section>
-    </>
-  )
+          <section className={`flex flex-col pb-4`}>
+              {registerView && viewId && (
+                  <RegisterView
+                      key={registerView.documentElement.getAttribute('Name')}
+                      view={registerView.documentElement!}
+                  />
+              )}
+          </section>
+      </>
+  );
 }
