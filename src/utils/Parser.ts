@@ -3,11 +3,12 @@ import {DtoView} from "../types/DtoView";
 import {DtoSchema} from "../types/DtoSchema";
 
 export const getRegisterViews = async () => {
-
   return await getSchema().then(result => {
     const xmlMetaViewList = result?.MetaViews
     const xmlParser = new DOMParser()
     const listOfMetaViews: Document[] = []
+
+    console.log('Getting register views...');
 
     xmlMetaViewList?.map((metaView: DtoView) => {
       listOfMetaViews.push(xmlParser.parseFromString(metaView.XML, "text/xml"))

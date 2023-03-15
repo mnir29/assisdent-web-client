@@ -37,6 +37,7 @@ export async function getSchema() {
     LoginType: "Rest"
   }
   try {
+    console.log('Getting schema');
     const {data} = await axios.post<LoginResponse>(`${import.meta.env.VITE_ASSISCARE_BASE}${import.meta.env.VITE_ASSISCARE_ROUTE}login`, loginData);
     if (data.AccessToken) {
       // TODO store AccessToken?

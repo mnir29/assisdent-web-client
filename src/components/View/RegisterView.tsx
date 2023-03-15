@@ -51,6 +51,7 @@ export const RegisterView = ({view}: DataProps) => {
   // Fetch data for register table
   // Mutate only once, when component renders
   useEffect(() => {
+    console.log("Gettign entities for register view")
     mutation.mutate(searchOptions)
   }, [])
 

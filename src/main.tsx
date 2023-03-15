@@ -20,13 +20,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <IndexPage/>,
-        loader: schemaLoader(queryClient)
+        element: <IndexPage/>
       },
       {
         path: "view/:viewId",
-        element: <ShowView />,
-        loader: schemaLoader(queryClient)
+        element: <ShowView />
       }
     ]
   },

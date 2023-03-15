@@ -2,10 +2,16 @@ import {Sidebar} from './components/Sidebar';
 import {MainView} from "./components/MainView";
 import {ApplicationBar} from "./components/ApplicationBar";
 import {Outlet, useNavigation} from "react-router-dom";
+import { useEffect } from 'react';
+import { getSchemaToStore } from './temp/SchemaUtils';
 
 function App() {
   const navigation = useNavigation()
 
+  useEffect(() => {
+      console.log('Fetching schema to store in App()');
+      getSchemaToStore();
+  }, []);
 
   return (
     <div className="App w-full flex">

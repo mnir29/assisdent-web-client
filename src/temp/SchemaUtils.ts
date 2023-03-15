@@ -2,6 +2,7 @@ import json from './schema.json'
 import {DtoSchema} from "../types/DtoSchema";
 import {DtoEntity} from "../types/DtoEntity";
 import {getSchema} from "../services/backend";
+import useSchemaStore from '../store/store';
 
 // TODO: schema data should be read from store eventually
 // Force type conversion to DtoSchema
@@ -28,6 +29,19 @@ export const getEntityToString = (name: string | undefined | null): string | und
 }
 
 /**
+ * Wrapper for getSchema that stores the result in the store
+ */
+export const getSchemaToStore = () => {
+  console.log('Run getSchemaToStore()');
+
+  getSchema().then((res) => {
+    useSchemaStore.setState({ schema: res });
+    const data = useSchemaStore.getState()?.schema;
+    console.log(data);
+  })
+}
+
+/**
  * Helper function for using tanstack query with react router
  */
 export const schemaQuery = () => ({
@@ -42,6 +56,7 @@ export const schemaQuery = () => ({
 export const loader =
   (queryClient: any) =>
     async () => {
+      console.log("Loader loading")
       if (!queryClient.getQueryData(schemaQuery().queryKey))
         await queryClient.fetchQuery(schemaQuery())
       return null
