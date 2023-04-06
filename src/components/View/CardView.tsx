@@ -16,6 +16,7 @@ import { getEntityPropertiesSchema } from '../../temp/SchemaUtils';
 import { List } from './List';
 import { TranslationList } from './TranslationList';
 import { SectionHeading } from './SectionHeading';
+import Datepicker from '../Datepicker';
 
 export type DataProps = {
     view: Element;
@@ -177,17 +178,10 @@ export const CardView = ({ view }: DataProps) => {
                     >
                         {element.attributes.Caption}
                     </label>
-                    <input
-                        id={element.attributes.Identifier}
-                        type={`text`}
-                        defaultValue={new Date(
-                            cardDetails.toString(),
-                        ).toLocaleString('fi-FI', {
-                            year: 'numeric',
-                            month: 'numeric',
-                            day: 'numeric',
-                        })}
-                        className={`flex-1 max-h-12 border border-ad-grey-300 rounded-sm px-2 py-1 hover:border-ad-primary focus:border-ad-primary active:border-ad-primary focus:outline-none`}
+                    <Datepicker
+                        value={new Date(cardDetails.toString())
+                            .toISOString()
+                            .slice(0, 10)}
                     />
                 </div>
             );
