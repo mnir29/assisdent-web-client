@@ -10,6 +10,10 @@ import { DtoEntity } from '../types/DtoEntity';
 import { mapObjectValueByIntendedUse } from './mapUtils';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from './constants';
 
+export const isEmpty = (obj: object) => {
+    return Object.keys(obj).length === 0;
+};
+
 enum BindingKind {
     BINDING,
     FORMATTED_TEXT,
@@ -173,24 +177,17 @@ export const resolveEntityBindings = (
             const bindingType = getBindingType(rawBinding);
 
             if (bindingType === null) {
-                console.log(`Unknown Binding Type:`, rawBinding);
+                console.warn(`Unknown Binding Type:`, rawBinding);
                 return;
             }
 
+            // Removes the binding type text from the string "{Binding xyz}" => "xyz"
+            // Either Binding or FormattedText
             const sanitizedBinding =
                 bindingType === BindingKind.BINDING
                     ? rawBinding.substring(8).trim().slice(0, -1)
                     : rawBinding.substring(14).trim().slice(0, -1);
 
-            if (bindingType === BindingKind.BINDING) {
-                value = tryToGetProp(entity, sanitizedBinding);
-            } else if (bindingType === BindingKind.FORMATTED_TEXT) {
-                value = resolveFormattedText(
-                    entity,
-                    sanitizedBinding,
-                    entityType,
-                );
-            }
             if (bindingType === BindingKind.BINDING) {
                 value = tryToGetProp(entity, sanitizedBinding);
             } else if (bindingType === BindingKind.FORMATTED_TEXT) {
@@ -219,6 +216,7 @@ export const resolveEntityBindings = (
                 );
             }
 
+            // TODO should return value or GhostText if value is nullish
             return value ?? '-';
         });
     });

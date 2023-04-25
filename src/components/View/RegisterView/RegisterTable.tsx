@@ -1,8 +1,13 @@
 import React, { ChangeEventHandler, MouseEventHandler, useState } from 'react';
-import { resolveEntityBindings } from '../../utils/utils';
-import { DynamicObject } from '../../types/DynamicObject';
+import {
+    resolveEntityBindings,
+    sanitizeBinding,
+    tryToGetProp,
+} from '../../../utils/utils';
+import { DynamicObject } from '../../../types/DynamicObject';
 import { Link } from 'react-router-dom';
-import { useContextMenu } from '../../context/ContextMenuProvider';
+import { useContextMenu } from '../../../context/ContextMenuProvider';
+import { RegisterTableStatusCell } from './RegisterTableStatusCell';
 
 export type RegisterTableProps = {
     columns: string[];
@@ -12,8 +17,9 @@ export type RegisterTableProps = {
     contextMenu:
         | {
               Text: string;
-              Command: Element[];
+              Command: DynamicObject;
           }[];
+    MetaViewObject: DynamicObject;
 };
 
 export const RegisterTable = ({
@@ -22,6 +28,7 @@ export const RegisterTable = ({
     bindings,
     entityType,
     contextMenu,
+    MetaViewObject,
 }: RegisterTableProps) => {
     const [selectedList, setSelectedList] = useState<Set<string>>(new Set());
     const [favoriteList, setFavoriteList] = useState<Set<string>>(new Set());
@@ -96,9 +103,15 @@ export const RegisterTable = ({
     };
 
     const TableHeaders = (
-        <thead className={`bg-[#d2dce6] text-sm`}>
+        <thead
+            className={`bg-[#d2dce6] text-sm font-semibold text-slate-600 text-left`}
+        >
             <tr className={``}>
                 <th className="text-center w-8 h-8"></th>
+                {Object.hasOwn(
+                    MetaViewObject,
+                    'IsStateIndicatorExpandedByDefault',
+                ) && <th className={`px-2`}>Tila</th>}
                 <th className="text-center w-8 h-8 font-normal">
                     <input
                         type="checkbox"
@@ -108,10 +121,7 @@ export const RegisterTable = ({
                 </th>
                 {columns?.map((c, idx) => {
                     return (
-                        <th
-                            className="text-left px-2 font-semibold text-slate-600"
-                            key={idx}
-                        >
+                        <th className=" px-2 " key={idx}>
                             {c}
                         </th>
                     );
@@ -128,12 +138,38 @@ export const RegisterTable = ({
             entityType,
         );
 
+        const isStateInfo = Object.hasOwn(
+            MetaViewObject,
+            'IsStateIndicatorExpandedByDefault',
+        );
+
+        const RegisterItem =
+            MetaViewObject.Children.find(
+                (obj: DynamicObject) => obj.TagName === 'RegisterItem',
+            ) || null;
+
+        let StateColor = null;
+
+        if (RegisterItem) {
+            StateColor = tryToGetProp(
+                entity,
+                sanitizeBinding(RegisterItem.StateColor),
+            );
+        }
+
         return (
             <tr
                 key={entity.Id}
                 className={`border-b border-gray-300 hover:bg-blue-100/30`}
             >
                 <td className="text-center w-8 bg-[#e2e9ee]">⬇️</td>
+                {isStateInfo && typeof StateColor === 'string' && (
+                    <RegisterTableStatusCell
+                        entity={entity}
+                        MetaViewObject={MetaViewObject}
+                        StateColor={StateColor}
+                    />
+                )}
                 <td className="text-center w-8">
                     <input
                         type="checkbox"
@@ -172,7 +208,7 @@ export const RegisterTable = ({
                         </td>
                     );
                 })}
-                <td className={`text-sm flex justify-around`}>
+                <td className={`flex justify-around items-center h-full`}>
                     <span
                         className={
                             favoriteList.has(entity.Id)
@@ -200,7 +236,7 @@ export const RegisterTable = ({
     });
 
     return (
-        <table className="border-collapse border-spacing-1 w-full bg-white">
+        <table className="w-full bg-white text-sm">
             {TableHeaders}
             {entities && entities?.length > 0 && <tbody>{TableRows}</tbody>}
         </table>

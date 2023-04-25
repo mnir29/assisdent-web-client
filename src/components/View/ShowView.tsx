@@ -1,4 +1,4 @@
-import { RegisterView } from './RegisterView';
+import { RegisterView } from './RegisterView/RegisterView';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ViewHeader } from './ViewHeader';
 import { useIsFetching, useQuery } from '@tanstack/react-query';
@@ -7,6 +7,8 @@ import { CardView } from './CardView';
 import { useEffect } from 'react';
 import useSchemaStore from '../../store/store';
 import { SchemaStore } from '../../types/SchemaStore';
+import { Footer } from '../Footer';
+import Button from '../Button';
 
 export const ShowView = () => {
     const schema = useSchemaStore((state: SchemaStore) => state.schema);
@@ -27,11 +29,16 @@ export const ShowView = () => {
 
     useEffect(() => {
         if (isError) {
-            navigate('/somewhere');
+            navigate('/404');
         }
     }, [isError, error]);
 
     const Header = entity?.documentElement.getAttribute('Header');
+    const hasFooter =
+        entity?.documentElement.getElementsByTagNameNS(
+            null,
+            'ApplicationBar',
+        ) || null;
 
     return (
         <>
@@ -57,6 +64,11 @@ export const ShowView = () => {
                         <CardView view={entity.documentElement} />
                     )}
                 </>
+            )}
+            {hasFooter && (
+                <Footer>
+                    <Button>Testi</Button>
+                </Footer>
             )}
         </>
     );

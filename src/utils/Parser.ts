@@ -57,10 +57,9 @@ export const getViewFromSchemaByName = (schema: DtoSchema, name: string) => {
     });
 };
 
-const getColumnHeader = (element: Element): string => {
+const getColumnHeader = (element: Element): string | null => {
     return (
-        element.getAttribute('ColumnHeader')! ||
-        element.getAttribute('Caption')!
+        element.getAttribute('ColumnHeader') || element.getAttribute('Caption')
     );
 };
 
@@ -77,12 +76,37 @@ const pushBindingsAndColumns = (
             columns[columns.length - 1]
     ) {
         bindings.push([element.getAttribute(getAttributeBy)!]);
-        columns.push(captionOverride ?? getColumnHeader(element));
+        columns.push(captionOverride ?? getColumnHeader(element) ?? '');
     } else {
         bindings[bindings.length - 1].push(
             element.getAttribute(getAttributeBy)!,
         );
     }
+};
+
+const getElementsFromViewAsObjectRecursive = (root: Element) => {
+    const resultObj: DynamicObject = {
+        TagName: root.tagName,
+    };
+
+    for (const attrName of root.getAttributeNames()) {
+        resultObj[attrName] = root.getAttribute(attrName);
+    }
+
+    if (root.hasChildNodes()) {
+        resultObj['Children'] = [] as DynamicObject[];
+        for (let i = 0; i < root.children.length; i++) {
+            resultObj['Children'].push(
+                getElementsFromViewAsObjectRecursive(root.children[i]),
+            );
+        }
+    }
+
+    return resultObj;
+};
+
+export const getRegisterMetaViewAsObject = (view: Element) => {
+    return getElementsFromViewAsObjectRecursive(view);
 };
 
 export const parseRegisterMetaView = (view: Element) => {
@@ -96,7 +120,7 @@ export const parseRegisterMetaView = (view: Element) => {
 
         let captionAdded = false;
         if (element.tagName === 'Group') {
-            captionOverrides.push(getColumnHeader(element));
+            captionOverrides.push(getColumnHeader(element) ?? '');
             captionAdded = true;
         }
 
@@ -163,42 +187,18 @@ const orderNameToObjectArray = (
 };
 
 export const parseOrderOptions = (
-    OrderOptionsEl: Element,
+    OrderOptionsRaw: DynamicObject,
     SchemaEntity: DtoEntity,
 ) => {
-    if (!(OrderOptionsEl && OrderOptionsEl.hasChildNodes())) {
-        return [];
-    }
-
     const SchemaOrderOptions: DynamicObject = SchemaEntity.OrderOptions;
-    const allOptions = OrderOptionsEl.children;
     const OrderOptions: OrderBy[] = [];
 
-    // Create an array of different order options
-    // Parse attributes from elements and push into the result array
-    Array.from(allOptions).forEach((element) => {
-        let OrderOption: DynamicObject = {};
-        const ElementAttributeNames = element.getAttributeNames();
-
-        // Get all OrderOption attributes and values
-        for (const attr of ElementAttributeNames) {
-            // use NS version of getAttribute because regular one lowercases the attribute name
-            const value = element.getAttributeNS(null, attr);
-            if (value === null) continue;
-
-            if (attr === 'IsDescending') {
-                OrderOption[attr] = value === 'true';
-            } else OrderOption[attr] = value;
-        }
-
+    OrderOptionsRaw.Children.forEach((OrderOption: DynamicObject) => {
         // Handle the case of ordering by multiple columns
         // Split OrderingName into an array, if the string is in
         // the form of 'order1,..,orderN'
         if (OrderOption.OrderingName === undefined) {
-            console.error(
-                'Could not find OrderingName from view XML',
-                OrderOption,
-            );
+            console.error('Could not find OrderingName', OrderOption);
             return [];
         }
 

@@ -29,7 +29,7 @@ export const ViewList = ({ className }: { className?: string }) => {
 
             return (
                 <option key={docName} value={docName}>
-                    {header}
+                    {header} {docName && ' - ' + docName}
                 </option>
             );
         });
